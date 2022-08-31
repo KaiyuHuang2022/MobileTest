@@ -15,11 +15,12 @@ import kotlinx.android.synthetic.main.fragment_connection_failed.*
  * @param details the details of the connection error.
  * @param fragmentCallback will be called when the user hit the "Retry" button.
  */
-class ConnectionFailedFragment(
-    private val title: String,
-    private val details: String,
-    private val fragmentCallback: FragmentCallback
-) : Fragment() {
+class ConnectionFailedFragment() : Fragment() {
+
+    private var title: String? = null
+    private var details: String? = null
+    private var fragmentCallback: FragmentCallback? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +55,7 @@ class ConnectionFailedFragment(
         bundle.putString(
             FragmentCallback.BundleContents.FragmentClassName.name,
             ConnectionFailedFragment::class.java.name)
-        fragmentCallback.onCallbackFromFragment(bundle)
+        fragmentCallback?.onCallbackFromFragment(bundle)
     }
 
     companion object {
@@ -68,6 +69,10 @@ class ConnectionFailedFragment(
          */
         @JvmStatic
         fun newInstance(title: String, details: String, fragmentCallback: FragmentCallback) =
-            ConnectionFailedFragment(title, details, fragmentCallback)
+            ConnectionFailedFragment().apply {
+                this.title = title
+                this.details = details
+                this.fragmentCallback = fragmentCallback
+            }
     }
 }

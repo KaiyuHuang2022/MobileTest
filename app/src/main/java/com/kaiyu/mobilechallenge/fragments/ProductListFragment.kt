@@ -28,15 +28,10 @@ import com.kaiyu.mobilechallenge.Utils
  * This fragment implements the [ProductListEventListener] interface, to receive events like
  * user's operations from the product list RecyclerView.
  */
-class ProductListFragment(productList: List<ProductInfo>) : Fragment(), ProductListEventListener {
+class ProductListFragment() : Fragment(), ProductListEventListener {
 
     /** A [ProductList] instance that stores data of all products */
     private val allProducts: ProductList = ProductList()
-
-    init {
-        // Import product data from a list of ProductInfo to the product list
-        allProducts.importFromList(productList)
-    }
 
 
     override fun onCreateView(
@@ -138,8 +133,8 @@ class ProductListFragment(productList: List<ProductInfo>) : Fragment(), ProductL
          */
         @JvmStatic
         fun newInstance(productList: List<ProductInfo>) =
-            ProductListFragment(productList).apply {
-
+            ProductListFragment().apply {
+                allProducts.importFromList(productList)
             }
 
 

@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">MobileChallenge</string>
+
+    <string name="currency_symbol">£ %1$s</string>
+
+    <!-- Strings used in ProductListFragment-->
+    <string name="dialog_progress_loading_data">Loading data…</string>
+    <string name="product_list_item_title_default">Product Name</string>
+    <string name="product_list_item_price_default">£ 0.00</string>
+    <string name="product_list_item_size_default">The pack size information of this product</string>
+
+    <!-- Strings that are used in ProductDetailsActivity -->
+    <string name="product_details_downloading_prompt">Downloading product data…</string>
+    <string name="product_details_tag_prompt">Tag:</string>
+    <string name="product_details_size_prompt">Pack size:</string>
+    <string name="product_details_allergy_prompt">Allergy information:</string>
+    <string name="product_details_title_default">Downloading the title of the product…</string>
+    <string name="product_details_description_default">Downloading the description…</string>
+    <string name="product_details_tag_default">Downloading the tag information…</string>
+    <string name="product_details_size_default">Downloading the size information…</string>
+    <string name="product_details_allergy_default">Downloading allergy information…</string>
+    <string name="no_such_information">Unknown</string>
+    <string name="product_details_dismiss_button">Dismiss</string>
+
+    <!-- Strings that are used in ConnectionFailedFragment -->
+    <string name="no_network_prompt">No Internet access</string>
+    <string name="connection_failed_no_internet_title">No Internet access</string>
+    <string name="connection_failed_no_internet_details">Please check your network settings</string>
+    <string name="connection_failed_general_title">Connection failed</string>
+    <string name="connection_failed_timeout_details">
+        Please check your network and DNS settings, or try again later.</string>
+    <string name="data_failed_parse_error_title">Unable to get product list</string>
+    <string name="data_failed_parse_error_details">
+        Please update your app to the newest version.
+        If this problem persist, please contact customer support</string>
+    <string name="connection_failed_button_open_settings">Open network settings</string>
+    <string name="connection_failed_button_retry">Retry</string>
+
+
+</resources>

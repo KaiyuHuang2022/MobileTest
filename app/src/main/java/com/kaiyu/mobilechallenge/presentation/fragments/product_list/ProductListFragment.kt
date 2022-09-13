@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.presentation.ui.product_list
+package com.kaiyu.mobilechallenge.presentation.fragments.product_list
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kaiyu.mobilechallenge.domain.data_models.ProductInfo
 import com.kaiyu.mobilechallenge.domain.data_models.ProductList
-import com.kaiyu.mobilechallenge.presentation.ProductDetailsActivity
+import com.kaiyu.mobilechallenge.presentation.ui.ProductDetailsActivity
 import com.kaiyu.mobilechallenge.R
 import com.kaiyu.mobilechallenge.common.Utils
 

@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.presentation
+package com.kaiyu.mobilechallenge.presentation.ui
 
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
@@ -7,10 +7,10 @@ import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.kaiyu.mobilechallenge.R
-import com.kaiyu.mobilechallenge.presentation.ui.connection_failed.ConnectionFailedFragment
+import com.kaiyu.mobilechallenge.presentation.fragments.connection_failed.ConnectionFailedFragment
 import com.kaiyu.mobilechallenge.presentation.fragments.FragmentCallback
 import com.kaiyu.mobilechallenge.presentation.view_models.ProductListViewModel
-import com.kaiyu.mobilechallenge.presentation.ui.product_list.ProductListFragment
+import com.kaiyu.mobilechallenge.presentation.fragments.product_list.ProductListFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 

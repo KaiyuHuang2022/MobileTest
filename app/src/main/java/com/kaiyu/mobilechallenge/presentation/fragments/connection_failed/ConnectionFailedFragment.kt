@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.presentation.ui.connection_failed
+package com.kaiyu.mobilechallenge.presentation.fragments.connection_failed
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

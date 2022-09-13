@@ -19,10 +19,10 @@
         android:theme="@style/Theme.MobileChallenge"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.ProductDetailsActivity"
+            android:name=".presentation.ui.ProductDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.ProductListActivity"
+            android:name=".presentation.ui.ProductListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

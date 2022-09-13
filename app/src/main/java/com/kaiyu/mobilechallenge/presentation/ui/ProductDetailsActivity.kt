@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.presentation
+package com.kaiyu.mobilechallenge.presentation.ui
 
 import android.app.Dialog
 import android.content.Intent

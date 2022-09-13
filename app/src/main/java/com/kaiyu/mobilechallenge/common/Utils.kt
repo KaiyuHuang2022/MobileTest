@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge
+package com.kaiyu.mobilechallenge.common
 
 import android.app.Activity
 import android.content.Context
@@ -7,7 +7,8 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import com.kaiyu.mobilechallenge.data_models.ProductInfo
+import com.kaiyu.mobilechallenge.R
+import com.kaiyu.mobilechallenge.domain.data_models.ProductInfo
 
 object Utils {
 

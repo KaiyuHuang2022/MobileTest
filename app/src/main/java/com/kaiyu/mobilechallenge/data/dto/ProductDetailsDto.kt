@@ -1,8 +1,8 @@
-package com.kaiyu.mobilechallenge.product_database_accessor
+package com.kaiyu.mobilechallenge.data.dto
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.kaiyu.mobilechallenge.data_models.ProductInfo
+import com.kaiyu.mobilechallenge.domain.data_models.ProductInfo
 import java.io.Serializable
 
 /**
@@ -11,7 +11,7 @@ import java.io.Serializable
  *
  * It is only used to parse the JSON string with [Gson].
  */
-data class ProductDetailsResponse(
+data class ProductDetailsDto(
     val id: String,
     val price: String,
     val title: String,
@@ -46,11 +46,11 @@ data class ProductDetailsResponse(
          * @param content the JSON string.
          * @return a nullable instance of this class.
          */
-        fun parseFromJsonString(content: String?): ProductDetailsResponse? {
+        fun parseFromJsonString(content: String?): ProductDetailsDto? {
             // Get the type token of List<ProductDetailsResponse>
-            val typeToken = object : TypeToken<List<ProductDetailsResponse>>() {}.type
+            val typeToken = object : TypeToken<List<ProductDetailsDto>>() {}.type
             // Parse the JSON string by using Gson with the type token
-            val parsedContent = Gson().fromJson<List<ProductDetailsResponse>>(content, typeToken)
+            val parsedContent = Gson().fromJson<List<ProductDetailsDto>>(content, typeToken)
             // Because the JSON response from the database server is a list that contains only one
             // JSON object, so the parsed content is a list with only one ProductInfo instance, so
             // the following code uses parsedContent[0] to access it.

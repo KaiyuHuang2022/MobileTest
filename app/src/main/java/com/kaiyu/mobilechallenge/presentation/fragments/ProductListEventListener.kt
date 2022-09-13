@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.fragments
+package com.kaiyu.mobilechallenge.presentation.fragments
 
 import androidx.recyclerview.widget.RecyclerView
 

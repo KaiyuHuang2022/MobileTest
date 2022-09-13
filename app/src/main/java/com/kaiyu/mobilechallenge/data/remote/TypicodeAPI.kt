@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.product_database_accessor
+package com.kaiyu.mobilechallenge.data.remote
 
 import retrofit2.Call
 import retrofit2.http.GET
@@ -9,7 +9,7 @@ import retrofit2.http.Query
  * response.
  */
 
-interface ProductDatabaseQueries {
+interface TypicodeAPI {
 
     /** The query to get product list */
     @GET("ocadotechnology/mobile-challenge/products")

@@ -1,7 +1,7 @@
-package com.kaiyu.mobilechallenge.product_database_accessor
+package com.kaiyu.mobilechallenge.data
 
 import com.google.gson.Gson
-import com.kaiyu.mobilechallenge.data_models.ProductInfo
+import com.kaiyu.mobilechallenge.domain.data_models.ProductInfo
 import java.io.Serializable
 
 /**
@@ -11,7 +11,7 @@ import java.io.Serializable
  * It is only used to parse the JSON string with [Gson].
  */
 
-data class ProductListResponse(
+data class ProductListDto(
     val clusters: List<ProductCategory>
 ) : Serializable {
 

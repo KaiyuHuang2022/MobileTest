@@ -1,17 +1,20 @@
-package com.kaiyu.mobilechallenge
+package com.kaiyu.mobilechallenge.presentation
 
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.kaiyu.mobilechallenge.fragments.ConnectionFailedFragment
-import com.kaiyu.mobilechallenge.fragments.ProductListFragment
-import com.kaiyu.mobilechallenge.database_accessor.DatabaseAccessor
-import com.kaiyu.mobilechallenge.database_accessor.DatabaseCallback
-import com.kaiyu.mobilechallenge.fragments.FragmentCallback
-import com.kaiyu.mobilechallenge.product_database_accessor.ProductDatabaseAccessor
-import com.kaiyu.mobilechallenge.product_database_accessor.ProductListResponse
+import com.kaiyu.mobilechallenge.R
+import com.kaiyu.mobilechallenge.common.Utils
+import com.kaiyu.mobilechallenge.presentation.fragments.ConnectionFailedFragment
+import com.kaiyu.mobilechallenge.presentation.fragments.ProductListFragment
+import com.kaiyu.mobilechallenge.domain.repository.Repository
+import com.kaiyu.mobilechallenge.domain.repository.RepositoryCallback
+import com.kaiyu.mobilechallenge.presentation.fragments.FragmentCallback
+import com.kaiyu.mobilechallenge.data.ProductListDto
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 
 /**
@@ -31,10 +34,12 @@ import com.kaiyu.mobilechallenge.product_database_accessor.ProductListResponse
  * This activity uses the third-party library [Glide] to load image, with the LRU memory cache
  * feature enabled.
  */
+@AndroidEntryPoint
 class ProductListActivity : AppCompatActivity(), FragmentCallback {
 
-    /** A [DatabaseAccessor] instance for getting product list data from the database server */
-    private val databaseAccessor: DatabaseAccessor = ProductDatabaseAccessor()
+    /** A [Repository] instance for getting product list data from the database server */
+    //private val databaseAccessor: DatabaseAccessor = ProductDatabaseAccessor()
+    @Inject lateinit var repository: Repository
 
     /** A progress dialog indicating that the app is downloading the data */
     private var downloadingProgressDialog: Dialog? = null
@@ -56,7 +61,7 @@ class ProductListActivity : AppCompatActivity(), FragmentCallback {
     /**
      * Download the list of products from database.
      *
-     * If the network is available it will send a request via [databaseAccessor],
+     * If the network is available it will send a request via [repository],
      * otherwise it will transfer to [ConnectionFailedFragment]
      * and wait for further instructions from the user.
      */
@@ -70,10 +75,10 @@ class ProductListActivity : AppCompatActivity(), FragmentCallback {
 
             // Create an anonymous DatabaseCallback instance to handle the response from the
             // database server
-            val databaseCallback = object : DatabaseCallback<ProductListResponse> {
+            val repositoryCallback = object : RepositoryCallback<ProductListDto> {
 
                 // Invoked for successfully received and parsed the response from database server.
-                override fun onDataReady(parsedResponse: ProductListResponse) {
+                override fun onDataReady(parsedResponse: ProductListDto) {
                     downloadingProgressDialog?.cancel()
                     // Load the product list fragment when data ready
                     val productList = parsedResponse.convertToProductInfoList()
@@ -110,10 +115,10 @@ class ProductListActivity : AppCompatActivity(), FragmentCallback {
             }
 
             // Start to download the product list data
-            databaseAccessor.download(
+            repository.download(
                 queryParams = null,
-                responseDataClass = ProductListResponse::class.java,
-                databaseCallback = databaseCallback,
+                responseDataClass = ProductListDto::class.java,
+                repositoryCallback = repositoryCallback,
                 customisedParser = null
             )
 

@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.data_models
+package com.kaiyu.mobilechallenge.domain.data_models
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

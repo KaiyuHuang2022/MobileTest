@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.product_database_accessor
+package com.kaiyu.mobilechallenge.data.remote
 
 import android.text.TextUtils
 import okhttp3.Dns

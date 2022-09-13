@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.fragments
+package com.kaiyu.mobilechallenge.presentation.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,11 +9,11 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.kaiyu.mobilechallenge.data_models.ProductInfo
-import com.kaiyu.mobilechallenge.data_models.ProductList
-import com.kaiyu.mobilechallenge.ProductDetailsActivity
+import com.kaiyu.mobilechallenge.domain.data_models.ProductInfo
+import com.kaiyu.mobilechallenge.domain.data_models.ProductList
+import com.kaiyu.mobilechallenge.presentation.ProductDetailsActivity
 import com.kaiyu.mobilechallenge.R
-import com.kaiyu.mobilechallenge.Utils
+import com.kaiyu.mobilechallenge.common.Utils
 
 
 /**
@@ -66,7 +66,8 @@ class ProductListFragment() : Fragment(), ProductListEventListener {
         // Create an intent launching a ProductDetailsActivity
         val intent = Intent(requireContext(), ProductDetailsActivity::class.java)
         // Put the corresponding ProductInfo instance as extra data of the intent
-        intent.putExtra(ProductDetailsActivity.AcceptableIntentExtras.ProductInfo.name,
+        intent.putExtra(
+            ProductDetailsActivity.AcceptableIntentExtras.ProductInfo.name,
             allProducts[position]
         )
         // Launch the activity with the intent (for result)

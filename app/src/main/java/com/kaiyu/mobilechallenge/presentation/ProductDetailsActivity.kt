@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge
+package com.kaiyu.mobilechallenge.presentation
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -8,11 +8,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
-import com.kaiyu.mobilechallenge.data_models.ProductInfo
-import com.kaiyu.mobilechallenge.database_accessor.DatabaseAccessor
-import com.kaiyu.mobilechallenge.database_accessor.DatabaseCallback
-import com.kaiyu.mobilechallenge.product_database_accessor.ProductDatabaseAccessor
-import com.kaiyu.mobilechallenge.product_database_accessor.ProductDetailsResponse
+import com.kaiyu.mobilechallenge.R
+import com.kaiyu.mobilechallenge.common.Utils
+import com.kaiyu.mobilechallenge.domain.data_models.ProductInfo
+import com.kaiyu.mobilechallenge.domain.repository.Repository
+import com.kaiyu.mobilechallenge.domain.repository.RepositoryCallback
+import com.kaiyu.mobilechallenge.data.repository.TypicodeRepository
+import com.kaiyu.mobilechallenge.data.dto.ProductDetailsDto
 import kotlinx.android.synthetic.main.activity_product_details.*
 
 /**
@@ -64,9 +66,9 @@ class ProductDetailsActivity : AppCompatActivity() {
     private var updatedFieldsOfProduct: HashSet<String> = HashSet()
 
     /**
-     * A [DatabaseAccessor] instance that is used to get data from the database.
+     * A [Repository] instance that is used to get data from the database.
      */
-    private val databaseAccessor: DatabaseAccessor = ProductDatabaseAccessor()
+    private val repository: Repository = TypicodeRepository()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -268,10 +270,10 @@ class ProductDetailsActivity : AppCompatActivity() {
 
                 // Create an anonymous DatabaseCallback instance to handle the response from the
                 // database server
-                val databaseCallback = object : DatabaseCallback<ProductDetailsResponse> {
+                val repositoryCallback = object : RepositoryCallback<ProductDetailsDto> {
 
                     // Invoked for successfully received and parsed the response from database server.
-                    override fun onDataReady(parsedResponse: ProductDetailsResponse) {
+                    override fun onDataReady(parsedResponse: ProductDetailsDto) {
                         // Convert the parsed result to a ProductInfo instance.
                         val newProductInfo = parsedResponse.convertToProductInfo()
 
@@ -298,12 +300,12 @@ class ProductDetailsActivity : AppCompatActivity() {
 
                 // Start to download the product list data, using a customised parser that is
                 // defined in ProductDetailsResponse
-                databaseAccessor.download(
+                repository.download(
                     queryParams = listOf(it),
-                    responseDataClass = ProductDetailsResponse::class.java,
-                    databaseCallback = databaseCallback,
+                    responseDataClass = ProductDetailsDto::class.java,
+                    repositoryCallback = repositoryCallback,
                 ) { stringResult ->
-                    ProductDetailsResponse.parseFromJsonString(stringResult)
+                    ProductDetailsDto.parseFromJsonString(stringResult)
                 }
             }
         // Otherwise

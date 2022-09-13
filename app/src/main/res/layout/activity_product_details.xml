@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/light_gray_background"
     android:padding="15dp"
-    tools:context=".ProductDetailsActivity">
+    tools:context=".presentation.ProductDetailsActivity">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"

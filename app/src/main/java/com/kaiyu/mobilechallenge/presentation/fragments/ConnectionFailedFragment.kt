@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.fragments
+package com.kaiyu.mobilechallenge.presentation.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

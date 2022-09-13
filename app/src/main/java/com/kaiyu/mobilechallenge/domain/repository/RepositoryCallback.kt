@@ -1,13 +1,13 @@
-package com.kaiyu.mobilechallenge.database_accessor
+package com.kaiyu.mobilechallenge.domain.repository
 
 /**
- * Handles response from the database server. The [DatabaseAccessor] will parse the original response
+ * Handles response from the database server. The [Repository] will parse the original response
  * data and call proper methods in this interface according to different situations.
  *
  * @param T The data class of which the hierarchical structure matches the JSON response
  * from the database server.
  */
-interface DatabaseCallback<T> {
+interface RepositoryCallback<T> {
 
     /**
      * Invoked for successfully received and parsed the response from database server.

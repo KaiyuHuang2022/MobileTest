@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.fragments
+package com.kaiyu.mobilechallenge.presentation.fragments
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -9,9 +9,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.kaiyu.mobilechallenge.data_models.ProductList
+import com.kaiyu.mobilechallenge.domain.data_models.ProductList
 import com.kaiyu.mobilechallenge.R
-import com.kaiyu.mobilechallenge.Utils
+import com.kaiyu.mobilechallenge.common.Utils
 
 
 /**

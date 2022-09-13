@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.presentation.fragments
+package com.kaiyu.mobilechallenge.presentation.ui.connection_failed
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,16 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.kaiyu.mobilechallenge.R
+import com.kaiyu.mobilechallenge.presentation.fragments.FragmentCallback
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_connection_failed.*
 
 
 /**
  * This fragment shows error messages about the connection, and a "Retry" button.
- * @param title the title of the connection error.
- * @param details the details of the connection error.
- * @param fragmentCallback will be called when the user hit the "Retry" button.
  */
-class ConnectionFailedFragment() : Fragment() {
+@AndroidEntryPoint
+class ConnectionFailedFragment : Fragment() {
 
     private var title: String? = null
     private var details: String? = null

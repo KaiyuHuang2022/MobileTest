@@ -9,6 +9,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.kaiyu.mobilechallenge.R
 import com.kaiyu.mobilechallenge.domain.data_models.ProductInfo
+import java.security.InvalidParameterException
 
 object Utils {
 
@@ -42,39 +43,53 @@ object Utils {
      * @param specifiedFields if it is not null, only fields in it will be updated.
      * @return the updated [oldInstance]
      */
-    fun mergeTwoProductInfoInstances(oldInstance: ProductInfo,
+    fun mergeTwoProductInfoInstances(oldInstance: ProductInfo?,
                                      newInstance: ProductInfo,
                                      specifiedFields: HashSet<String>? = null
-    ) : HashSet<String> {
+    ) : ProductInfo {
 
-        val ret = HashSet<String>()
+        if (oldInstance == null) {
+            return newInstance
+        } else {
 
-        // Return the oldInstance as it is if trying to merge two instances with different id
-        if (oldInstance.id != newInstance.id) {
-            return ret
-        }
-
-        for (field in ProductInfo::class.java.declaredFields) {
-            // The field "id" is a val which cannot be changed
-            if (field.name == "id") {
-                continue
+            // Throw InvalidParameterException if trying to merge two instances with different id
+            if (oldInstance.id != newInstance.id) {
+                throw Exception(
+                    InvalidParameterException(
+                        ExceptionMessages.MERGING_PRODUCTS_WITH_DIFFERENT_ID
+                    )
+                )
             }
-            // If the specifiedFields is NULL, update all fields that are non-NULL in the
-            // newInstance, otherwise, update the specified fields only (a field will not be
-            // updated if it is NULL in the newInstance).
-            if (specifiedFields == null || specifiedFields.contains(field.name)) {
-                field.isAccessible = true
-                // If a field of newInstance is not NULL, it will be assigned to the oldInstance,
-                // this will overwrite the data in oldInstance if of which the field is not NULL.
-                val newData = field.get(newInstance)
-                newData.let {
-                    field.set(oldInstance, newData)
-                    ret.add(field.name)
+
+            val tmpInstance = ProductInfo(id = oldInstance.id)
+
+            for (field in ProductInfo::class.java.declaredFields) {
+                // The field "id" is a val which cannot be changed
+                if (field.name == "id") {
+                    continue
+                }
+                // If the specifiedFields is NULL, update all fields that are non-NULL in the
+                // newInstance, otherwise, update the specified fields only (a field will not be
+                // updated if it is NULL in the newInstance).
+                if (specifiedFields == null || specifiedFields.contains(field.name)) {
+                    field.isAccessible = true
+
+                    // If a field of newInstance is not NULL, it will be assigned to the oldInstance,
+                    // this will overwrite the data in oldInstance if of which the field is not NULL.
+                    val oldData = field.get(oldInstance)
+                    val newData = field.get(newInstance)
+                    if (newData != null) {
+                        field.set(tmpInstance, newData)
+                    } else if (oldData != null) {
+                        field.set(tmpInstance, oldData)
+                    } else {
+                        field.set(tmpInstance, null)
+                    }
                 }
             }
-        }
 
-        return ret
+            return tmpInstance
+        }
 
     }
 

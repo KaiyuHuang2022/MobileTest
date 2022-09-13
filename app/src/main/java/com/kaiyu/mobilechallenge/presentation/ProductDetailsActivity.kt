@@ -1,5 +1,6 @@
 package com.kaiyu.mobilechallenge.presentation
 
+import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,14 +8,13 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import com.bumptech.glide.Glide
 import com.kaiyu.mobilechallenge.R
 import com.kaiyu.mobilechallenge.common.Utils
 import com.kaiyu.mobilechallenge.domain.data_models.ProductInfo
-import com.kaiyu.mobilechallenge.domain.repository.Repository
-import com.kaiyu.mobilechallenge.domain.repository.RepositoryCallback
-import com.kaiyu.mobilechallenge.data.repository.TypicodeRepository
-import com.kaiyu.mobilechallenge.data.dto.ProductDetailsDto
+import com.kaiyu.takehometest.presentation.view_model.ProductDetailViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_product_details.*
 
 /**
@@ -47,28 +47,15 @@ import kotlinx.android.synthetic.main.activity_product_details.*
  * This activity uses the third-party library [Glide] to load image, with the LRU memory cache
  * feature enabled.
  */
+@AndroidEntryPoint
 class ProductDetailsActivity : AppCompatActivity() {
 
+    private val viewModel: ProductDetailViewModel by viewModels()
 
     /** A [ProductInfo] instance stores all or part of data of the current product */
     private var productInfo: ProductInfo? = null
 
-    /**
-     * Records the product data not provided by the intent but are required to show complete
-     * details of a product.
-     */
-    private var missingFieldsOfProduct: HashSet<String> = HashSet()
-
-    /**
-     * Records the product data not provided by the intent but downloaded by this activity.
-     * Names of declared fields in the class [ProductInfo] of the newly downloaded data will be stored in this HashSet.
-     */
-    private var updatedFieldsOfProduct: HashSet<String> = HashSet()
-
-    /**
-     * A [Repository] instance that is used to get data from the database.
-     */
-    private val repository: Repository = TypicodeRepository()
+    private var downloadingProgressDialog: Dialog? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,12 +67,40 @@ class ProductDetailsActivity : AppCompatActivity() {
             dismissButtonOnClickListener()
         }
 
+        // Initialise the downloading progress dialog
+        downloadingProgressDialog = Dialog(this)
+        downloadingProgressDialog?.setContentView(R.layout.dialog_downloading_progress)
+
         // Get product information from the intent
         getDataFromIntent()
 
         // Load the data to corresponding views
         refreshAllViews()
 
+        if (!noMissingData()) {
+            productInfo?.let {
+                viewModel.getProductDetail(it.id)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.state.observe(this) { state ->
+            if (state.isLoading) {
+                downloadingProgressDialog?.show()
+            } else {
+                downloadingProgressDialog?.cancel()
+
+                if (state.product != null) {
+                    productInfo = Utils.mergeTwoProductInfoInstances(productInfo, state.product!!)
+                    refreshAllViews(true)
+                } else {
+                    handleNoNetworkCase()
+                }
+            }
+        }
     }
 
 
@@ -98,14 +113,9 @@ class ProductDetailsActivity : AppCompatActivity() {
     /**
      * Load all information stored in the [productInfo] instance to corresponding views.
      *
-     * If there is any missing data, it will call the method [downloadMissingInformation] to download
-     * them, and then it will be called again by the [downloadMissingInformation] method to load
-     * downloaded information to the view.
-     *
      * When adding a new view to the activity, here's the right place to set up it.
      *
-     * @param isFinalLoad if this flag is true, the method [downloadMissingInformation] will not be
-     *        called to download missing data, and the content of corresponding fields will
+     * @param isFinalLoad if this flag is true, the content of corresponding fields will
      *        be set to "unknown".
      */
     private fun refreshAllViews(isFinalLoad: Boolean = false) {
@@ -164,20 +174,12 @@ class ProductDetailsActivity : AppCompatActivity() {
             null,
             isFinalLoad
         )
-
-        // If there is any missing information, and this is not a final load,
-        // download the missing information from the database.
-        if(!isFinalLoad && missingFieldsOfProduct.isNotEmpty()) {
-            downloadMissingInformation()
-        }
-
     }
 
 
     /**
      * The helper function that get the required data from [productInfo] and use it to set
-     * up the [targetView]. If any required data are missing in the [productInfo], this function
-     * will record them in [missingFieldsOfProduct].
+     * up the [targetView].
      *
      * @param targetView the target view to which the data will be loaded. The current version of
      * this function supports [TextView] and [ImageView].
@@ -219,13 +221,6 @@ class ProductDetailsActivity : AppCompatActivity() {
                     }
                 }
             }
-            // If failed to get the data corresponding to fieldName, record it
-            if (fieldData == null) {
-                missingFieldsOfProduct.add(fieldName)
-            }
-        // If the [productInfo] is NULL
-        } else {
-            missingFieldsOfProduct.add(fieldName)
         }
 
         // If the customised loader is provided, use it to set up the targetView
@@ -255,63 +250,15 @@ class ProductDetailsActivity : AppCompatActivity() {
         }
     }
 
-
-    /**
-     * Download the product data from the database. Send a query request with the id of
-     * the product.
-     *
-     * The request will be sent only if the network is available, and [productInfo] and its [ProductInfo.id]
-     * field are not null.
-     */
-    private fun downloadMissingInformation() {
-        // If the network and the product id are available, send the request
-        if(Utils.isNetworkAvailable(this)) {
-            productInfo?.id?.let {
-
-                // Create an anonymous DatabaseCallback instance to handle the response from the
-                // database server
-                val repositoryCallback = object : RepositoryCallback<ProductDetailsDto> {
-
-                    // Invoked for successfully received and parsed the response from database server.
-                    override fun onDataReady(parsedResponse: ProductDetailsDto) {
-                        // Convert the parsed result to a ProductInfo instance.
-                        val newProductInfo = parsedResponse.convertToProductInfo()
-
-                        // Update the productInfo and refresh all views with the updated information
-                        updateProductInfoHelper(newProductInfo)
-
-                        refreshAllViews(true)
-                    }
-
-                    // Invoke when failed to parse the data. That might because the server returns
-                    // a JSON string that does not match the hierarchy structure of T, or the server
-                    // returns responses of application-level failures, such as 404 or 500.
-                    override fun onDataParseError() {
-                        refreshAllViews(true)
-                    }
-
-                    // Invoke when the connection to the database server is failed. This might because
-                    // of the connection timeout, or uncaught exceptions.
-                    override fun onConnectionError(responseMessage: String) {
-                        refreshAllViews(true)
-                    }
-
-                }
-
-                // Start to download the product list data, using a customised parser that is
-                // defined in ProductDetailsResponse
-                repository.download(
-                    queryParams = listOf(it),
-                    responseDataClass = ProductDetailsDto::class.java,
-                    repositoryCallback = repositoryCallback,
-                ) { stringResult ->
-                    ProductDetailsDto.parseFromJsonString(stringResult)
-                }
+    private fun noMissingData() : Boolean {
+        var ret = true
+        for (field in ProductInfo::class.java.declaredFields) {
+            field.isAccessible = true
+            if (field.get(productInfo) == null) {
+                ret = false
             }
-        // Otherwise
-        } else {
-            handleNoNetworkCase()
         }
+        return ret
     }
 
     /**
@@ -322,35 +269,6 @@ class ProductDetailsActivity : AppCompatActivity() {
     private fun handleNoNetworkCase() {
         Toast.makeText(this, getString(R.string.no_network_prompt), Toast.LENGTH_LONG).show()
         refreshAllViews(true)
-    }
-
-
-    /**
-     * Update the [productInfo] instance with new data.
-     *
-     * Because both the "/products" and "/product?id={productID}" queries provide only part of
-     * data about the product, which means only part of fields of [ProductInfo] will be
-     * filled by a single query.
-     *
-     * So what this function doing is to combine the newly downloaded [newProductInfo] and
-     * the old [productInfo] instance. If a field of [productInfo] has already assigned with a
-     * value, it will be replaced with the new value from [newProductInfo].
-     *
-     * @param newProductInfo the new instance of [ProductInfo] with newly downloaded data.
-     */
-    private fun updateProductInfoHelper(newProductInfo: ProductInfo) {
-
-        // Combine [newProductInfo] and the old [productInfo]
-        productInfo.let {
-            updatedFieldsOfProduct = Utils.mergeTwoProductInfoInstances(
-                productInfo!!,
-                newProductInfo,
-                missingFieldsOfProduct
-            )
-        }
-
-        // If a field was updated, remove it from [missingFieldsOfProduct]
-        missingFieldsOfProduct.subtract(updatedFieldsOfProduct)
     }
 
 

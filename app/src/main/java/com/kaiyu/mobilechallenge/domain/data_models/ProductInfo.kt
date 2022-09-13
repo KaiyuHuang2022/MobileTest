@@ -3,7 +3,7 @@ package com.kaiyu.mobilechallenge.domain.data_models
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
-typealias ProductID = String
+typealias ProductID = Int
 
 
 /**
@@ -15,7 +15,7 @@ typealias ProductID = String
 data class ProductInfo(
 
     /** The unique ID of the product */
-    val id: String? = null,
+    val id: ProductID = -1,
 
     /** The price of the product (in pounds) */
     var price: String? = null,

@@ -1,4 +1,4 @@
-package com.kaiyu.mobilechallenge.presentation.fragments
+package com.kaiyu.mobilechallenge.presentation.ui.product_list
 
 import android.content.Intent
 import android.os.Bundle
@@ -31,7 +31,7 @@ import com.kaiyu.mobilechallenge.common.Utils
 class ProductListFragment() : Fragment(), ProductListEventListener {
 
     /** A [ProductList] instance that stores data of all products */
-    private val allProducts: ProductList = ProductList()
+    private var allProducts: ProductList = ProductList()
 
 
     override fun onCreateView(
@@ -133,9 +133,9 @@ class ProductListFragment() : Fragment(), ProductListEventListener {
          * @return A new instance of fragment ProductList.
          */
         @JvmStatic
-        fun newInstance(productList: List<ProductInfo>) =
+        fun newInstance(productList: ProductList) =
             ProductListFragment().apply {
-                allProducts.importFromList(productList)
+                allProducts = productList
             }
 
 

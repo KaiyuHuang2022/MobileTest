@@ -13,7 +13,7 @@ import kotlin.collections.HashSet
  *
  * The current version does not support sorting products.
  */
-class ProductList() {
+class ProductList {
 
     /** A Hashtable that is used to store all [ProductInfo] instances */
     private val products: Hashtable<ProductID, ProductInfo> = Hashtable()

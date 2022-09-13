@@ -11,9 +11,6 @@ import retrofit2.*
  * placed on the front, so they will be top choices of the [okhttp3] client, because using IPv6
  * addresses to access "https://my-json-server.typicode.com/" sometimes causes timeout.
  *
- * The [ProductDatabaseAccessor] uses a third-party library [Retrofit] to access the database, which
- * is based on [okhttp3].
- * @see ProductDatabaseAccessor
  */
 class CustomisedDNS : Dns {
     /**

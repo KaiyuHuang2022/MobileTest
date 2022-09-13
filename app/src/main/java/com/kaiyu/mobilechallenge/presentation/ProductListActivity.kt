@@ -3,18 +3,15 @@ package com.kaiyu.mobilechallenge.presentation
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.kaiyu.mobilechallenge.R
-import com.kaiyu.mobilechallenge.common.Utils
-import com.kaiyu.mobilechallenge.presentation.fragments.ConnectionFailedFragment
-import com.kaiyu.mobilechallenge.presentation.fragments.ProductListFragment
-import com.kaiyu.mobilechallenge.domain.repository.Repository
-import com.kaiyu.mobilechallenge.domain.repository.RepositoryCallback
+import com.kaiyu.mobilechallenge.presentation.ui.connection_failed.ConnectionFailedFragment
 import com.kaiyu.mobilechallenge.presentation.fragments.FragmentCallback
-import com.kaiyu.mobilechallenge.data.ProductListDto
+import com.kaiyu.mobilechallenge.presentation.view_models.ProductListViewModel
+import com.kaiyu.mobilechallenge.presentation.ui.product_list.ProductListFragment
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 
 /**
@@ -37,9 +34,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductListActivity : AppCompatActivity(), FragmentCallback {
 
-    /** A [Repository] instance for getting product list data from the database server */
-    //private val databaseAccessor: DatabaseAccessor = ProductDatabaseAccessor()
-    @Inject lateinit var repository: Repository
+    private val viewModel: ProductListViewModel by viewModels()
 
     /** A progress dialog indicating that the app is downloading the data */
     private var downloadingProgressDialog: Dialog? = null
@@ -53,87 +48,32 @@ class ProductListActivity : AppCompatActivity(), FragmentCallback {
         downloadingProgressDialog = Dialog(this)
         downloadingProgressDialog?.setContentView(R.layout.dialog_downloading_progress)
 
-        // Start to get product list from the database server
-        fetchProductList()
     }
 
+    override fun onResume() {
+        super.onResume()
 
-    /**
-     * Download the list of products from database.
-     *
-     * If the network is available it will send a request via [repository],
-     * otherwise it will transfer to [ConnectionFailedFragment]
-     * and wait for further instructions from the user.
-     */
-    private fun fetchProductList() {
+        viewModel.state.observe(this) { state ->
 
-        // If the network is available, connect to the database to download the product list
-        if(Utils.isNetworkAvailable(this)) {
+            if (state.isLoading) {
+                downloadingProgressDialog?.show()
+            } else {
+                downloadingProgressDialog?.cancel()
 
-            // Show the downloading progress dialog
-            downloadingProgressDialog?.show()
-
-            // Create an anonymous DatabaseCallback instance to handle the response from the
-            // database server
-            val repositoryCallback = object : RepositoryCallback<ProductListDto> {
-
-                // Invoked for successfully received and parsed the response from database server.
-                override fun onDataReady(parsedResponse: ProductListDto) {
-                    downloadingProgressDialog?.cancel()
-                    // Load the product list fragment when data ready
-                    val productList = parsedResponse.convertToProductInfoList()
-                    val productListFragment = ProductListFragment.newInstance(productList)
+                if (state.productList != null) {
+                    val productListFragment = ProductListFragment.newInstance(state.productList)
                     transferToFragment(productListFragment)
-                }
-
-                // Invoke when failed to parse the data. That might because the server returns
-                // a JSON string that does not match the hierarchy structure of T, or the server
-                // returns responses of application-level failures, such as 404 or 500.
-                override fun onDataParseError() {
-                    downloadingProgressDialog?.cancel()
-                    // Prompt that the data parsing was failed.
-                    val connectionFailedFragment = ConnectionFailedFragment.newInstance(
-                        getString(R.string.data_failed_parse_error_title),
-                        getString(R.string.data_failed_parse_error_details),
-                        this@ProductListActivity
-                    )
-                    transferToFragment(connectionFailedFragment)
-                }
-
-                // Invoke when the connection to the database server is failed. This might because
-                // of the connection timeout, or uncaught exceptions.
-                override fun onConnectionError(responseMessage: String) {
-                    downloadingProgressDialog?.cancel()
-                    // Prompt that the connection to the server was failed
+                } else {
                     val connectionFailedFragment = ConnectionFailedFragment.newInstance(
                         getString(R.string.connection_failed_general_title),
-                        responseMessage,
-                        this@ProductListActivity
+                        state.errorMessage ?: getString(R.string.connection_failed_general_details),
+                        this
                     )
                     transferToFragment(connectionFailedFragment)
                 }
             }
-
-            // Start to download the product list data
-            repository.download(
-                queryParams = null,
-                responseDataClass = ProductListDto::class.java,
-                repositoryCallback = repositoryCallback,
-                customisedParser = null
-            )
-
-        // Otherwise, transfer to the ConnectionFailedFragment and wait for user's instruction
-        } else {
-            // Create a ConnectionFailedFragment instance with messages indicating there's
-            // no Internet access.
-            val connectionFailedFragment = ConnectionFailedFragment.newInstance(
-                getString(R.string.connection_failed_no_internet_title),
-                getString(R.string.connection_failed_no_internet_details),
-                this
-            )
-            // Transfer to the ConnectionFailedFragment
-            transferToFragment(connectionFailedFragment)
         }
+
     }
 
 
@@ -160,7 +100,7 @@ class ProductListActivity : AppCompatActivity(), FragmentCallback {
         val fragment = bundle?.getString(FragmentCallback.BundleContents.FragmentClassName.name)
         fragment?.let {
             if (it == ConnectionFailedFragment::class.java.name) {
-                fetchProductList()
+                viewModel.getProductList()
             }
         }
     }

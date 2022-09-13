@@ -27,7 +27,7 @@
     <string name="connection_failed_no_internet_title">No Internet access</string>
     <string name="connection_failed_no_internet_details">Please check your network settings</string>
     <string name="connection_failed_general_title">Connection failed</string>
-    <string name="connection_failed_timeout_details">
+    <string name="connection_failed_general_details">
         Please check your network and DNS settings, or try again later.</string>
     <string name="data_failed_parse_error_title">Unable to get product list</string>
     <string name="data_failed_parse_error_details">

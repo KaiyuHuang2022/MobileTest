@@ -1,6 +1,8 @@
 package com.kaiyu.mobilechallenge.data.remote
 
-import retrofit2.Call
+import com.kaiyu.mobilechallenge.data.dto.product_details.ProductDetailDto
+import com.kaiyu.mobilechallenge.domain.data_models.ProductID
+import com.kaiyu.mobilechallenge.data.dto.product_list.ProductListDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -13,9 +15,10 @@ interface TypicodeAPI {
 
     /** The query to get product list */
     @GET("ocadotechnology/mobile-challenge/products")
-    fun productList() : Call<String>
+    suspend fun getProductList() : ProductListDto
 
     /** The query to get detailed information of a single product */
     @GET("ocadotechnology/mobile-challenge/product")
-    fun productDetails(@Query("id") id: String) : Call<String>
+    suspend fun getProductDetails(@Query("id") id: ProductID) : ProductDetailDto
+
 }
